@@ -95,11 +95,11 @@ public class landingpage extends javax.swing.JFrame {
         systemname.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         systemname.setText("PAW PRINTS");
         systemname.setPreferredSize(new java.awt.Dimension(200, 30));
-        header.add(systemname, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, 160, 50));
+        header.add(systemname, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 160, 50));
 
         logo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/logo.png"))); // NOI18N
-        header.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 70, 60));
+        header.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 70, 60));
 
         getContentPane().add(header, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, -1, 90));
 
@@ -145,7 +145,7 @@ public class landingpage extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(92, 64, 51));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("<html> <div style=\"text-align:center\"> Find Your<br>Perfect Friend </div> </html> ");
+        jLabel7.setText("<html>  <div style=\"text-align: center; font-family: 'Georgia', serif; color: #5C4033; padding: 10px;\">   <span style=\"font-size: 24pt; font-weight: bold; text-shadow: 3px 3px 5px #A9A9A9;\">     Find Your<br>     <span style=\"font-size: 32pt; color: #8B4513;\">Perfect Friend</span>   </span>  </div> </html>");
         jLabel7.setPreferredSize(new java.awt.Dimension(450, 40));
         main.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 30, 380, 160));
 
@@ -165,6 +165,11 @@ public class landingpage extends javax.swing.JFrame {
         jButton1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(92, 64, 51), 2, true)); // rounded corners
         jButton1.setFocusPainted(false);
         jButton1.setPreferredSize(new java.awt.Dimension(160, 40));
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jButton1MouseEntered(evt);
+            }
+        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -213,6 +218,9 @@ public class landingpage extends javax.swing.JFrame {
           new registration().setVisible(true);
           this.dispose();
     }//GEN-LAST:event_signupActionPerformed
+
+    private void jButton1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseEntered
+        jButton1.setBackground(new java.awt.Color(210, 180, 140));    }//GEN-LAST:event_jButton1MouseEntered
 
     /**
      * @param args the command line arguments

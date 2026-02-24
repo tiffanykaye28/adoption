@@ -1,6 +1,7 @@
 
 package main;
 
+import config.Session;
 import config.config;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,8 +15,8 @@ public class login extends javax.swing.JFrame {
         initComponents();
     }
 
-   private void handleLogin() {
-    String emailText = em.getText().trim();
+                    private void handleLogin() {
+                   String emailText = em.getText().trim();
     String passwordText = new String(ps.getPassword()).trim();
 
     if (emailText.isEmpty() || passwordText.isEmpty()) {
@@ -23,17 +24,13 @@ public class login extends javax.swing.JFrame {
         return;
     }
 
-    if (emailText.equals("admin") && passwordText.equals("admin123")) {
-        JOptionPane.showMessageDialog(this, "ADMIN LOGIN SUCCESS");
-        new admindashboard("Admin Kaye", emailText, "ADMIN").setVisible(true);
-        this.dispose();
-        return;
-    }
+    try (Connection conn = config.connectDB()) {
+        // 1. Gi-apil nako ang 'password' sa SELECT statement
+        String sql = "SELECT a_id, fullname, email, password, type, status "
+                   + "FROM accounts "
+                   + "WHERE email = ? AND password = ? AND status = ?";
 
-    String sql = "SELECT fullname, email, type FROM accounts WHERE email = ? AND password = ? AND status = ?";
-    try (Connection conn = config.connectDB();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, emailText);
         pstmt.setString(2, passwordText);
         pstmt.setString(3, "ACTIVE");
@@ -41,21 +38,39 @@ public class login extends javax.swing.JFrame {
         ResultSet rs = pstmt.executeQuery();
 
         if (rs.next()) {
-            String fullname = rs.getString("fullname");
-            String email = rs.getString("email");
+            // Create session
+            Session sess = Session.getInstance();
+            sess.setA_Id(rs.getInt("a_id"));
+            sess.setFullname(rs.getString("fullname"));
+            sess.setEmail(rs.getString("email"));
+            
+            // 2. KINI ANG IMPORTANTE: Gi-save na ang password sa Session
+            sess.setPassword(rs.getString("password")); 
+            
+            sess.setType(rs.getString("type"));
+            sess.setStatus(rs.getString("status"));
+
             String type = rs.getString("type");
 
-            JOptionPane.showMessageDialog(this, "USER LOGIN SUCCESS");
-            new usersdashboard(fullname, email, type).setVisible(true);
-            this.dispose();
+            if ("ADMIN".equalsIgnoreCase(type)) {
+                JOptionPane.showMessageDialog(this, "Admin Login Success");
+                new admindashboard().setVisible(true);
+                this.dispose();
+            } else if ("USER".equalsIgnoreCase(type)) {
+                JOptionPane.showMessageDialog(this, "User Login Success");
+                new userdashboard().setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Unknown account type!", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Invalid Email or Password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
         }
 
-    } catch (SQLException e) {
+    } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
-    }
-}
+        }
+                 }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -169,6 +184,11 @@ public class login extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+        jButton1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jButton1KeyPressed(evt);
+            }
+        });
         jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 350, 110, 47));
 
         ps.addActionListener(new java.awt.event.ActionListener() {
@@ -186,7 +206,7 @@ public class login extends javax.swing.JFrame {
         });
         jPanel2.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 430, -1, -1));
 
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 87, 1010, 780));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 90, 1010, 780));
 
         pack();
         setLocationRelativeTo(null);
@@ -228,12 +248,16 @@ handleLogin();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void psActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_psActionPerformed
-        // TODO add your handling code here:
+jButton1.doClick();
     }//GEN-LAST:event_psActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1KeyPressed
 
     /**
      * @param args the command line arguments
@@ -286,7 +310,5 @@ handleLogin();
     private javax.swing.JLabel systemname;
     // End of variables declaration//GEN-END:variables
 
-    void setVisible() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 }
