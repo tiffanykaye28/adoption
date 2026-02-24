@@ -217,9 +217,9 @@ private void centerTableText(JTable table) {
         s1.setBorder(null);
         f1.setDefaultEditor(Object.class, null);
 
-        featuredpets.add(s1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 750, 135));
+        featuredpets.add(s1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 750, 135));
 
-        add(featuredpets, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 770, 175));
+        add(featuredpets, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 770, 160));
 
         availablepets.setBackground(new java.awt.Color(255, 245, 230));
         availablepets.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());

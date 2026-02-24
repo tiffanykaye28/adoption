@@ -96,6 +96,7 @@ public static Connection connectDB() {
         System.out.println("Error filtering data: " + e.getMessage());
     }
 }
+    }
 
 
-}
+

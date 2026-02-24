@@ -73,29 +73,27 @@ public class cardUser extends javax.swing.JPanel {
 
          
            private void updateUser() {
-        int row = tbl1.getSelectedRow();
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Select a user first!");
-            return;
-        }
-        
-        Object idObj = tbl1.getValueAt(row, 0);
-        int a_id = Integer.parseInt(idObj.toString());
-
+       int row = tbl1.getSelectedRow();
+    if (row == -1) {
+        JOptionPane.showMessageDialog(this, "Select a user first!");
+        return;
+    }
     
-        String username = JOptionPane.showInputDialog(this, "Edit Username:", tbl1.getValueAt(row, 1));
-        String email = JOptionPane.showInputDialog(this, "Edit Email:", tbl1.getValueAt(row, 2));
-        String contact = JOptionPane.showInputDialog(this, "Edit Contact:", tbl1.getValueAt(row, 3));
-        String status = JOptionPane.showInputDialog(this, "Edit Status:", tbl1.getValueAt(row, 4));
+    Object idObj = tbl1.getValueAt(row, 0);
+    int a_id = Integer.parseInt(idObj.toString());
 
-       if (username == null || email == null || contact == null || status == null) return;
+    String username = JOptionPane.showInputDialog(this, "Edit Username:", tbl1.getValueAt(row, 1));
+    String email = JOptionPane.showInputDialog(this, "Edit Email:", tbl1.getValueAt(row, 2));
+    String contact = JOptionPane.showInputDialog(this, "Edit Contact:", tbl1.getValueAt(row, 3));
+    String status = JOptionPane.showInputDialog(this, "Edit Status:", tbl1.getValueAt(row, 4));
 
-        
-        
-        String sql = "UPDATE accounts SET username=?, email=?, contact=?, status=? WHERE id=?";
-        con.addRecord(sql, username, email, contact, status, a_id);
+    if (username == null || email == null || contact == null || status == null) return;
 
-        loadUsers();
+    // GI-USAB: Gihimo kining 'a_id' gikan sa 'id'
+    String sql = "UPDATE accounts SET username=?, email=?, contact=?, status=? WHERE a_id=?";
+    con.addRecord(sql, username, email, contact, status, a_id);
+
+    loadUsers();
     }
            
            private void deleteUser() {
@@ -164,6 +162,11 @@ public class cardUser extends javax.swing.JPanel {
         add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 100, 30));
 
         btnUpdate.setText("UPDATE");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
         add(btnUpdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 20, 100, 30));
 
         btnDelete.setText("DELETE");
@@ -223,6 +226,10 @@ public class cardUser extends javax.swing.JPanel {
                         "%" + keyword + "%",
                         "%" + keyword + "%");
     }//GEN-LAST:event_searchKeyTyped
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

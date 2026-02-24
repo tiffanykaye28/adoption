@@ -8,74 +8,63 @@ package main;
 import config.Session;
 import config.config;
 import java.awt.CardLayout;
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 
 
 
 
 public class admindashboard extends javax.swing.JFrame {
-           
-          private cardUser cardUser;
     
-            public admindashboard() {
-                initComponents();
-               
-                    
-            cardUser = new cardUser();
-        // Add cards to the panel
+    // 1. I-declare ang mga panels isip variables sa class level
+    private cardUser cardUser;
+    private cardPets cardPets;
+    private cardadoptionrequest cardadoptionrequest1;
+
+    public admindashboard() {
+        // I-check ang session una sa tanan para dili mo-error ang initialization
+        if (!isSessionValid()) {
+            return; 
+        }
+
+        initComponents(); // Auto-generated code gikan sa NetBeans
+        
+        // 2. I-initialize ang mga objects sa panels
+        cardUser = new cardUser();
+        cardPets = new cardPets();
+        cardadoptionrequest1 = new cardadoptionrequest();
+
+        // 3. I-add ang mga cards sa imong display panel (jPanel2)
+        // Siguroha nga ang jPanel2 naka-CardLayout sa Design View
         jPanel2.add(cardPets, "cardPets");
         jPanel2.add(cardUser, "cardUser");
         jPanel2.add(cardadoptionrequest1, "cardAdoption");
-                    
-                
-                    CardLayout cl = (CardLayout) jPanel2.getLayout();
-                    cl.show(jPanel2, "cardPets");
-                    
-                    
-                    
-                    
-                    Session sess = Session.getInstance();
+        
+        // 4. I-set ang default view
+        CardLayout cl = (CardLayout) jPanel2.getLayout();
+        cl.show(jPanel2, "cardPets");
 
-                   if (sess == null || sess.getType() == null) {
+        // I-set ang ngalan sa Admin sa header
+        Session sess = Session.getInstance();
+        systemname.setText("PAW PRINTS - " + sess.getFullname());
+    }
+
+    // Function para i-validate ang session para dili mag "null" error
+    private boolean isSessionValid() {
+        Session sess = Session.getInstance();
+        if (sess == null || sess.getType() == null) {
             JOptionPane.showMessageDialog(null, "Please log in first!");
-            new login().setVisible(true); // redirect to login
+            new login().setVisible(true);
             this.dispose();
-            return;
+            return false;
         }
-
         if (!"ADMIN".equalsIgnoreCase(sess.getType())) {
             JOptionPane.showMessageDialog(null, "Access Denied! Admins only.");
-            new login().setVisible(true); // redirect to login
+            new login().setVisible(true);
             this.dispose();
-            return;
-                     }
-                        systemname.setText("PAW PRINTS - " + sess.getFullname());
-
-            }
-            
-            public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(() -> {
-            Session sess = Session.getInstance();
-            if (sess == null || sess.getType() == null) {
-                JOptionPane.showMessageDialog(null, "Please log in first!");
-                new login().setVisible(true);
-            } else if (!"ADMIN".equalsIgnoreCase(sess.getType())) {
-                JOptionPane.showMessageDialog(null, "Access Denied! Admins only.");
-                new login().setVisible(true);
-            } else {
-                new admindashboard().setVisible(true);
-            }
-        });
-    }
-           
-           
-           
-
-
-                    
+            return false;
+        }
+        return true;
+    }                    
                     
                     
 
@@ -94,8 +83,6 @@ public class admindashboard extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        cardadoptionrequest1 = new main.cardadoptionrequest();
-        cardPets = new main.cardPets();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1000, 600));
@@ -216,9 +203,6 @@ public class admindashboard extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(250, 235, 215));
         jPanel2.setPreferredSize(new java.awt.Dimension(800, 520));
         jPanel2.setLayout(new java.awt.CardLayout());
-        jPanel2.add(cardadoptionrequest1, "cardAdoption");
-        jPanel2.add(cardPets, "cardPets");
-
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 90, 790, 510));
 
         pack();
@@ -253,16 +237,19 @@ public class admindashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-            CardLayout cl = (CardLayout) jPanel2.getLayout();
-            cl.show(jPanel2, "cardAdoption");
+           CardLayout cl = (CardLayout) jPanel2.getLayout();
+    cl.show(jPanel2, "cardAdoption");
+    
+    // KINI ANG KULANG: I-refresh ang data inig click sa button
+    if (cardadoptionrequest1 != null) {
+        cardadoptionrequest1.loadRequests();
+    }
     }//GEN-LAST:event_jButton5ActionPerformed
 
 
    
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private main.cardPets cardPets;
-    private main.cardadoptionrequest cardadoptionrequest1;
     private javax.swing.JPanel header;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;

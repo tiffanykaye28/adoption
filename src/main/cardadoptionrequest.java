@@ -8,93 +8,94 @@ import javax.swing.event.DocumentEvent;
 public class cardadoptionrequest extends javax.swing.JPanel {
 
     config con = new config();
-    
-    
+
     public cardadoptionrequest() {
         initComponents();
-        loadRequests();
-        
+        loadRequests(); // I-load ang data sa pagsugod
+
+        // Automatic search samtang nag-type sa jTextField1
         jTextField1.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
             public void insertUpdate(DocumentEvent e) { searchRequest(); }
+            @Override
             public void removeUpdate(DocumentEvent e) { searchRequest(); }
+            @Override
             public void changedUpdate(DocumentEvent e) { searchRequest(); }
         });
     }
-public void loadRequests() {
-        String sql = "SELECT request_id AS 'ID', pet_name AS 'Pet Name', owner_name AS 'Owner Name', "
-                   + "request_date AS 'Request Date', status AS 'Status' FROM adoption_requests";
-        con.displayData(sql, tbl1);
-        tbl1.setEnabled(true); 
-        tbl1.setRowHeight(30);
+
+    // 1. LOAD ALL DATA
+    public void loadRequests() {
+       // Siguroha nga 'adoption_requests' ang table name sa imong pets.db
+  String sql = "SELECT app_id AS 'ID', pet_name AS 'Pet Name', applicant_name AS 'Applicant Name', email AS 'Email', status AS 'Status' FROM applications";
+    
+    con.displayData(sql, tbl1);
+    
+    tbl1.setEnabled(true); 
+    tbl1.setRowHeight(30);
+    System.out.println("Data loaded from applications table.");
     }
 
-private void filterByStatus() {
-    String selected = status.getSelectedItem().toString().trim();
+    // 2. SEARCH DATA
+    private void searchRequest() {
+        String keyword = jTextField1.getText();
+        String sql = "SELECT request_id AS 'ID', pet_name AS 'Pet Name', owner_name AS 'Owner Name', "
+                   + "request_date AS 'Request Date', status AS 'Status' FROM adoption_requests "
+                   + "WHERE pet_name LIKE ? OR owner_name LIKE ?";
+        con.displayData(sql, tbl1, "%" + keyword + "%", "%" + keyword + "%");
+        formatTable();
+    }
+
+    // 3. FILTER BY STATUS
+    private void filterByStatus() {
+        String selected = status.getSelectedItem().toString().trim();
         
-        // Kung gusto nimo naay option nga makita tanan, butangi og "All" sa Design model
-        if (selected.equals("All") || selected.isEmpty()) {
+        if (selected.equalsIgnoreCase("All") || selected.isEmpty()) {
             loadRequests();
         } else {
             String sql = "SELECT request_id AS 'ID', pet_name AS 'Pet Name', owner_name AS 'Owner Name', "
                        + "request_date AS 'Request Date', status AS 'Status' FROM adoption_requests "
                        + "WHERE status = ?";
             con.displayData(sql, tbl1, selected);
-        }}
-
-private void searchRequest() {
-        String keyword = jTextField1.getText();
-        String sql = "SELECT request_id, pet_name, owner_name, request_date, status FROM adoption_requests "
-                   + "WHERE pet_name LIKE ? OR owner_name LIKE ?";
-        con.displayData(sql, tbl1, "%" + keyword + "%", "%" + keyword + "%");
-    }
-private void filterStatus() {
-        String selected = status.getSelectedItem().toString().trim();
-        
-        if (selected.isEmpty()) {
-            loadRequests();
-        } else {
-            String sql = "SELECT request_id, pet_name, owner_name, request_date, status FROM adoption_requests "
-                       + "WHERE status = ?";
-            con.displayData(sql, tbl1, selected);
         }
+        formatTable();
     }
+
+    // 4. UPDATE STATUS (APPROVE/REJECT)
     private void updateRequestStatus(String newStatus) {
-int row = tbl1.getSelectedRow();
-    if (row == -1) {
-        JOptionPane.showMessageDialog(this, "Please select a request from the table first.");
-        return;
-    }
-
-    String requestId = tbl1.getValueAt(row, 0).toString();
-    String petName = tbl1.getValueAt(row, 1).toString();
-
-    // 1. VALIDATION: Pangutan-on usa ang Admin sa dili pa mo-proceed
-    int confirm = JOptionPane.showConfirmDialog(this, 
-            "Are you sure you want to " + newStatus.toLowerCase() + " the adoption request for " + petName + "?", 
-            "Confirm Action", 
-            JOptionPane.YES_NO_OPTION);
-
-    if (confirm == JOptionPane.YES_OPTION) {
-        String sqlRequest = "UPDATE adoption_requests SET status = ? WHERE request_id = ?";
-        con.addRecord(sqlRequest, newStatus, requestId);
-        
-        if (newStatus.equals("Approve")) {
-            String sqladoption_Request = "UPDATE adoption_requests SET status = 'Approve' WHERE request_id = ?";
-            con.addRecord(sqladoption_Request, requestId);
-            
-            String sqlPet = "UPDATE pets SET status = 'Adopted' WHERE name = ?";
-            con.addRecord(sqlPet, petName);
-            
-            JOptionPane.showMessageDialog(this, "System Update: The pet '" + petName + "' has been successfully moved to 'Adopted' status.");
-        } else {
-            JOptionPane.showMessageDialog(this, "Adoption request for " + petName + " has been marked as Rejected.");
+        int row = tbl1.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a request from the table first.");
+            return;
         }
 
-        filterByStatus(); 
-    } else {
-        System.out.println("Admin cancelled the action.");
+        String requestId = tbl1.getValueAt(row, 0).toString();
+        String petName = tbl1.getValueAt(row, 1).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to " + newStatus.toLowerCase() + " the adoption request for " + petName + "?", 
+                "Confirm Action", 
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            String sqlUpdate = "UPDATE applications SET status = ? WHERE app_id = ?";
+             con.addRecord(sqlUpdate, newStatus, requestId);
+            
+            if (newStatus.equals("Approve")) {
+                String sqlPet = "UPDATE pets SET status = 'Adopted' WHERE p_name = ?"; 
+                con.addRecord(sqlPet, petName);
+                JOptionPane.showMessageDialog(this, "Request Approved! " + petName + " is now marked as Adopted.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Request Rejected.");
+            }
+
+            loadRequests(); 
+        }
     }
 
+    private void formatTable() {
+        tbl1.setEnabled(true); 
+        tbl1.setRowHeight(30);
     }
     
     

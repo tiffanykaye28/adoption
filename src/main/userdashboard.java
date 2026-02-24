@@ -10,48 +10,46 @@ import javax.swing.JOptionPane;
 public class userdashboard extends javax.swing.JFrame {  
  
  
-    
+    public browsepets bp = new browsepets();
+    public adoptionform af = new adoptionform();
     
      public userdashboard() {
         initComponents();
         
   // 1. Check Session Security - Mao ni ang moprotekta sa imong dashboard
-      Session sess = Session.getInstance();
+Session sess = Session.getInstance();
         if (sess == null || sess.getType() == null) {
             JOptionPane.showMessageDialog(null, "Please log in first!");
             new login().setVisible(true);
             this.dispose();
             return;
-    }
-        // 2. I-display ang ngalan sa user sa header
+        }
+        
         systemname.setText("PAW PRINTS - " + sess.getFullname());
-        
-        
 
- // 3. AUTOMATIC SHOW UDASHBOARD ON LOGIN
-        // Nag-create ta og instance sa imong Udashboard class
-        Udashboard ud = new Udashboard();
-        
-        // I-add nato sa jPanel2 (nga naka-CardLayout) gamit ang ngalan nga "dashboard"
-        jPanel2.add(ud, "dashboard");
-        // Sugoon ang CardLayout nga ipakita ang "dashboard" card
-        CardLayout cl = (CardLayout) jPanel2.getLayout();
-        cl.show(jPanel2, "dashboard");
+        // I-add ang tanang panels sa imong CardLayout container (jPanel2)
+        jPanel2.add(new Udashboard(), "dashboard");
+        jPanel2.add(bp, "browsepets"); // I-add ang browsepets panel
+        jPanel2.add(af, "adoptionform"); // I-add ang adoptionform panel
 
-        // 4. AUTOMATIC HIGHLIGHT SA DASHBOARD BUTTON
-        resetNavColors(); // Siguroha nga limpyo ang colors
-        jButton7.setBackground(new java.awt.Color(120, 80, 60)); // Mas light nga brown para "active" look
-        jButton4.setBackground(new java.awt.Color(120, 80, 60));
+        // Default view: Dashboard
+        showCard("dashboard");
+        resetNavColors();
+        jButton7.setBackground(new java.awt.Color(120, 80, 60));
     }
 
-    // Function para i-reset ang color sa tanang buttons sa sidebar
+    // Helper method para dali ra ang pagbalhin-balhin og panel
+    public void showCard(String cardName) {
+        CardLayout cl = (CardLayout) jPanel2.getLayout();
+        cl.show(jPanel2, cardName);
+    }
+
     private void resetNavColors() {
         Color defaultColor = new java.awt.Color(92, 64, 51);
         jButton7.setBackground(defaultColor); // Dashboard
         jButton4.setBackground(defaultColor); // Account Profile
-        // I-reset pud ang uban buttons kung naa pa kay gidugang
-    }
-    
+        jButton10.setBackground(defaultColor); // Browse Pets
+    }    
 
 
     
@@ -180,6 +178,11 @@ public class userdashboard extends javax.swing.JFrame {
         jButton10.setBorderPainted(false);
         jButton10.setFocusPainted(false);
         jButton10.setPreferredSize(new java.awt.Dimension(160, 35));
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, 160, 35));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, -1, 500));
@@ -224,7 +227,7 @@ int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to logo
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-resetNavColors();
+    resetNavColors();
     jButton7.setBackground(new java.awt.Color(120, 80, 60));
 
     // Reload Udashboard to refresh data
@@ -244,6 +247,12 @@ resetNavColors();
     cl.show(jPanel2, "card2");
     
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+resetNavColors();
+        jButton10.setBackground(new java.awt.Color(120, 80, 60));
+        bp.displayPets(); // I-refresh ang table list
+        showCard("browsepets");    }//GEN-LAST:event_jButton10ActionPerformed
 
     /**
      * @param args the command line arguments
